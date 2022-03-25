@@ -1,24 +1,42 @@
-# README
+# Flix2You - Desafio Back-end da Mobile2You
+[<img src="/public/mobile2you.png"/>](/public/mobile2you.png)
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+## Sobre o projeto
 
-Things you may want to cover:
+API desenvolvida para listagem de filmes e atualização de catálogo
 
-* Ruby version
+## Preparação de ambiente
 
-* System dependencies
+```bash
+bin/setup
+```
 
-* Configuration
+## API
 
-* Database creation
+### Filmes
 
-* Database initialization
+#### Listar todos os filmes
 
-* How to run the test suite
+**Requisição:**
 
-* Services (job queues, cache servers, search engines, etc.)
+```
+GET /api/v1/movies
+```
 
-* Deployment instructions
+**Resposta:**
 
-* ...
+```
+Status: 200 (OK)
+
+[
+    {
+        "id": "840c7cfc-cd1f-4094-9651-688457d97fa4",
+        "title": "13 Reasons Why",
+        "genre": "TV Show",
+        "year": "2020",
+        "country": "United States",
+        "published_at": "2020-05-07",
+        "description": "A classmate receives a series of tapes that unravel the mystery of her tragic choice."
+    }
+]
+```
