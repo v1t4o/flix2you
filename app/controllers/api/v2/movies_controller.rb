@@ -2,7 +2,11 @@ require 'csv'
 
 class Api::V2::MoviesController < Api::V2::ApiController
     def index
-        @movies = Movie.all.order(release_year: :desc)
+        movies_params = params.permit(:title, :genre, :year, :country)
+        
+        return @movies = Movie.all.order(release_year: :desc) if movies_params.empty?
+
+        @movies = Movie.where(search)      
     end
 
     def index_filtered
@@ -14,13 +18,13 @@ class Api::V2::MoviesController < Api::V2::ApiController
     end
 
     def update
-        path = params.require(:movies).permit(:file)
+        path = params.require(:movies)
         
-        File.open(Rails.root.join('public', 'uploads', path[:file].original_filename), 'wb') do |file|
-          file.write(path[:file].read)
+        File.open(Rails.root.join('public', 'uploads', path.original_filename), 'wb') do |file|
+          file.write(path.read)
         end
 
-        table_movies = CSV.parse(File.read("./public/uploads/#{path[:file].original_filename}"), headers: true)
+        table_movies = CSV.parse(File.read("./public/uploads/#{path.original_filename}"), headers: true)
         
         movies = table_movies.map(&:to_h)
         movies.each do |movie|
@@ -36,6 +40,19 @@ class Api::V2::MoviesController < Api::V2::ApiController
             end
         end
 
+        File.delete(Rails.root.join('public', 'uploads', path.original_filename))
+
         render json: {"msg": "O catálogo está atualizado."}, status: 201
+    end
+
+    private
+
+    def search
+        query = {}
+        query[:title] = params[:title] unless params[:title].nil?
+        query[:genre] = params[:genre] unless params[:genre].nil?
+        query[:release_year] = params[:year] unless params[:year].nil?
+        query[:country] = params[:country] unless params[:country].nil?
+        query
     end
 end

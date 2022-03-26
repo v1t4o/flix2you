@@ -25,21 +25,20 @@ describe 'MovieModel API' do
 
     context 'POST /api/v2/movies/update' do
         it 'successfully' do
-            uri = URI('http://localhost:3000/api/v2/movies/update')
-            req = Net::HTTP::Post.new(uri)
-            req.set_form([['movies[file]', File.open('netflix_titles.csv')]], 'multipart/form-data')
-            response = Net::HTTP.start(uri.hostname, uri.port) do |http|
-                http.request(req)
-            end
+            file = fixture_file_upload('netflix_titles.csv', 'csv')
+            headers = { 'Content_Type' => 'text/csv'}
+            data = { movies: file}
 
-            expect(response.code).to eq "201"
+            post '/api/v2/movies/update', params: data, headers: headers
+
+            expect(response.status).to eq 201
             parsed_response = JSON.parse(response.body)
             expect(response.content_type).to include('application/json')
-            expect(parsed_response["msg"]).to include('O catálogo está atualizado.')
+            expect(parsed_response["msg"]).to eq('O catálogo está atualizado.')
         end
     end
 
-    context 'GET /api/v2/movies/search/:filter/:term' do
+    context 'GET /api/v2/movies/' do
         it 'successfully' do
             Movie.create!(index: "840c7cfc-cd1f-4094-9651-688457d97fa4",
                           title: "13 Reasons Why", genre: "TV Show", release_year: "2020",
@@ -48,7 +47,7 @@ describe 'MovieModel API' do
                                         unravel the mystery of her tragic choice."
                          )
 
-            get api_v2_movies_search_path('genre','TV Show')
+            get '/api/v2/movies?genre=TV Show'
 
             expect(response.status).to eq 200
             parsed_response = JSON.parse(response.body)
