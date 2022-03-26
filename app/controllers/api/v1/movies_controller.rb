@@ -5,6 +5,14 @@ class Api::V1::MoviesController < Api::V1::ApiController
         @movies = Movie.all.order(release_year: :desc)
     end
 
+    def index_filtered
+        @movies = Movie.all.order(release_year: :desc)
+
+        return @movies if params[:term].nil?
+
+        @movies = Movie.where("#{params[:filter]} LIKE ?", "%#{params[:term]}%")
+    end
+
     def update
         table_movies = CSV.parse(File.read('netflix_titles.csv'), headers: true)
         movies = table_movies.map(&:to_h)
@@ -23,3 +31,5 @@ class Api::V1::MoviesController < Api::V1::ApiController
         render json: {"msg": "O catálogo está atualizado."}, status: 200
     end
 end
+
+# 
