@@ -22,7 +22,7 @@ describe 'MovieModel API' do
         end
     end
 
-    context 'POST /api/v1/movies' do
+    context 'GET /api/v1/movies/update' do
         it 'successfully' do
             get '/api/v1/movies/update'
 
@@ -30,6 +30,25 @@ describe 'MovieModel API' do
             parsed_response = JSON.parse(response.body)
             expect(response.content_type).to include('application/json')
             expect(response.body).to include('O catálogo está atualizado.')
+        end
+    end
+
+    context 'GET /api/v1/movies/search/:filter/:term' do
+        it 'successfully' do
+            Movie.create!(index: "840c7cfc-cd1f-4094-9651-688457d97fa4",
+                          title: "13 Reasons Why", genre: "TV Show", release_year: "2020",
+                          country: "United States", date_added: "2020-05-07",
+                          description: "A classmate receives a series of tapes that
+                                        unravel the mystery of her tragic choice."
+                         )
+
+            get api_v1_movies_search_path('genre','TV Show')
+
+            expect(response.status).to eq 200
+            parsed_response = JSON.parse(response.body)
+            expect(response.content_type).to include('application/json')
+            expect(response.body).to include('TV Show')
+            expect(response.body).to include('13 Reasons Why')
         end
     end
 end
