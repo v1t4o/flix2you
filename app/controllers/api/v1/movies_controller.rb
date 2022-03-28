@@ -2,7 +2,7 @@ require 'csv'
 
 class Api::V1::MoviesController < Api::V1::ApiController
   def index
-    movies_params = params.permit(:title, :genre, :year, :country)
+    movies_params = params.permit(:title, :genre, :year, :country, :format)
 
     return @movies = Movie.all.order(release_year: :desc) if movies_params.empty?
 
@@ -29,7 +29,7 @@ class Api::V1::MoviesController < Api::V1::ApiController
 
   def update_catalog(movies)
     movies.each do |movie|
-      next if movie_exists?(movie['show_id']).nil?
+      next unless movie_exists?(movie['show_id']).nil?
 
       save_movie(movie)
     end
